@@ -25,12 +25,14 @@
 #ifndef SAMPLE_PROCESSES_ENABLED
 #include "hydra.h"
 #include "Functions/presso.h"
+#include "Support/counters.h"
 #include "../A_os/kernel/A_exported_functions.h"
 
 #include "ff.h"
 extern	SD_HandleTypeDef hsd1;
 extern	FRESULT list_directory(const char *path);
 extern	uint32_t find_files_by_extension(const char *path,const char *extension);
+extern					Hydra_Counters_TypeDef	Hydra_Counters;
 
 char					BoardNameVersion[256];
 Presso_ee_TypeDef		Presso_on_sd;
@@ -295,7 +297,7 @@ uint8_t		boardname_buffer_tx[EE_BOARD_NAMEVERSION_SIZE];
 void hydra_process_3_EE(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-uint8_t		cntr = 0,boardname_initialized = 0,boardname_checked = 0;
+uint8_t		cntr = 0,boardname_initialized = 0,boardname_checked = 0,boardname_updated = 0;
 
 	sdcard_register(&HydraSDCARD);
 	if ( i2c_24xx_register(&i2c_24xx_Drv) == 0 )
@@ -332,7 +334,20 @@ uint8_t		cntr = 0,boardname_initialized = 0,boardname_checked = 0;
 						sprintf((char *)boardname_buffer_tx,BOARD_NAMEVERSION);
 						i2c_24xx_write(&i2c_24xx_Drv,EE_BOARD_NAMEVERSION_ADDRESS,boardname_buffer_tx, EE_BOARD_NAMEVERSION_SIZE);
 						boardname_checked = 1;
+						boardname_updated = 1;
 					}
+					else
+						boardname_checked = 1;
+				}
+			}
+			if ( cntr == 8)
+			{
+				if ( boardname_updated == 1)
+				{
+					bzero(boardname_buffer_tx,EE_COUNTERS_SIZE);
+					i2c_24xx_write(&i2c_24xx_Drv,EE_COUNTERS_START,boardname_buffer_tx, EE_COUNTERS_SIZE);
+					bzero((uint8_t *)&Hydra_Counters,sizeof(Hydra_Counters_TypeDef));
+					boardname_updated = 0;
 				}
 			}
 			if ( cntr == 10)

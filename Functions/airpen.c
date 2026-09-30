@@ -54,7 +54,6 @@ static uint32_t airpen_cleanup_function(uint32_t	val0,uint32_t	val1)
 	return 0;
 }
 
-
 uint32_t airpen_set_out(uint32_t level)
 {
 	if ( level )
@@ -70,6 +69,7 @@ uint32_t airpen_set_out(uint32_t level)
 		HYDRA_Struct.cleanup_function = airpen_cleanup_function;
 		HYDRA_Struct.airpen_enable = 1;
 		HYDRA_Struct.pump_status = 1;
+		HYDRA_Struct.running_function = AIRPEN_OP;
 	}
 	else
 	{
@@ -84,6 +84,7 @@ uint32_t airpen_set_out(uint32_t level)
 		HYDRA_Struct.cleanup_function = NULL;
 		HYDRA_Struct.airpen_enable = 0;
 		HYDRA_Struct.pump_status = 0;
+		HYDRA_Struct.running_function = 0;
 	}
 	return 0;
 }

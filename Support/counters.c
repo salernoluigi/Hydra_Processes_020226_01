@@ -25,6 +25,24 @@
 #include "../hydra.h"
 #include "counters.h"
 
+Hydra_Counters_TypeDef	Hydra_Counters;
+uint8_t					counter_buffer_tx[EE_COUNTERS_SIZE];
+
+uint32_t	update_counters(uint8_t op)
+{
+	if ( op == 0 )
+		return 0;
+	Hydra_Counters.op_time[GLOBAL_OP] ++;
+	Hydra_Counters.op_time[op] ++;
+	Hydra_Counters.time_to_update ++;
+	if ( Hydra_Counters.time_to_update > WRITE_AFTER_120_SEC)
+	{
+		Hydra_Counters.time_to_update = 0;
+		bzero(counter_buffer_tx,EE_COUNTERS_SIZE);
+		i2c_24xx_write(&i2c_24xx_Drv,EE_COUNTERS_START,counter_buffer_tx, EE_COUNTERS_SIZE);
+	}
+	return 0;
+}
 
 #endif //#ifndef	SAMPLE_PROCESSES_ENABLED
 

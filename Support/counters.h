@@ -23,6 +23,24 @@
 #ifndef HYDRA_COUNTERS_H_
 #define HYDRA_COUNTERS_H_
 
+/*
+ * Defined in ../hydra.h :
+#define	GLOBAL_STOPPED	0
+#define	GLOBAL_OP		1
+#define	AIRPEN_OP		2
+#define	HYDRAPEN_OP		3
+#define	JETPEEL_OP		4
+#define	LINFOCUP_OP		5
+#define	MOUSSE_OP		6
+#define	PRESSO_OP		7
+#define	VORTEX_OP		8
+*/
 
+typedef struct
+{
+	uint32_t			op_time[9];
+	uint8_t				time_to_update;
+}Hydra_Counters_TypeDef;
 
+#define	WRITE_AFTER_120_SEC		120
 #endif /* HYDRA_COUNTERS_H_ */

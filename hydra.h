@@ -23,7 +23,7 @@
 #ifndef HYDRA_020226_01_H_
 #define HYDRA_020226_01_H_
 
-#define	BOARD_NAMEVERSION				"KS Hydra 1.0 FW : 1.0.0"
+#define	BOARD_NAMEVERSION				"KS Hydra 1.0 FW : 1.0.1"
 
 extern	ADC_HandleTypeDef hadc1;
 
@@ -145,6 +145,7 @@ typedef struct
 	uint8_t			ee_sd_flags;
 	uint8_t			presso_enable;
 	uint8_t			presso_program;
+	uint8_t			running_function;
 	uint16_t		adc_data[ADCVAL_SAMPLES];
 	uint32_t		press0;
 	uint32_t		press1;
@@ -173,10 +174,10 @@ typedef struct
 #define	EE_PRESSO_PROGSTART				0x100
 #define	EE_PRESSO_PROGRAM_SIZE			256
 #define	EE_PRESSO_NUM_PROGRAM			16
-#define	EE_PRESSO_PROGEND				(EE_MEMORY_MAP_PRESSO_PROGSTART+(EE_PRESSO_PROGRAM_SIZE*EE_PRESSO_NUM_PROGRAM))
+#define	EE_PRESSO_PROGEND				(EE_PRESSO_PROGSTART+(EE_PRESSO_PROGRAM_SIZE*EE_PRESSO_NUM_PROGRAM))
 
 #define	EE_COUNTERS_START				EE_PRESSO_PROGEND
-#define	EE_COUNTERS_SIZE				1024
+#define	EE_COUNTERS_SIZE				256
 #define	EE_COUNTERS_END					(EE_COUNTERS_START+EE_COUNTERS_SIZE)
 
 #define	HYDRA_NAME_LEN					32
@@ -229,6 +230,15 @@ typedef struct
 		TIM15_CH1_PWM| TIM15_CH2_PWM )
 #define	ALL_GPIO 0
 
+#define	GLOBAL_STOPPED	0
+#define	GLOBAL_OP		1
+#define	AIRPEN_OP		2
+#define	HYDRAPEN_OP		3
+#define	JETPEEL_OP		4
+#define	LINFOCUP_OP		5
+#define	MOUSSE_OP		6
+#define	PRESSO_OP		7
+#define	VORTEX_OP		8
 
 #define	__STDRAM_DATA_AREA	__attribute__ ((aligned (32)))
 //#define	__PRESSO_DATA_AREA	__attribute__((section(".d2ram"))) __attribute__ ((aligned (32)))
