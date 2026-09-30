@@ -21,7 +21,7 @@
  */
 #include "main.h"
 #include "A_os_includes.h"
-#include "hydra_020226_00.h"
+#include "hydra.h"
 #ifndef	SAMPLE_PROCESSES_ENABLED
 #include "global_timer.h"
 uint16_t 	timer=1800;

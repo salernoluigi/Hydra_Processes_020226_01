@@ -23,8 +23,8 @@
 
 #include "main.h"
 #include "../A_os_includes.h"
-#include "../hydra_020226_00.h"
 #ifndef	SAMPLE_PROCESSES_ENABLED
+#include "../hydra.h"
 #include "easy_functions.h"
 
 

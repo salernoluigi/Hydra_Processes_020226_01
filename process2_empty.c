@@ -14,20 +14,23 @@
  * Project : A_os
 */
 /*
- * A_os_includes.h
+ * process2_empty.c
  *
- *  Created on: Mar 13, 2026
+ *  Created on: Sep 29, 2026
  *      Author: fil
  */
+#include "main.h"
+#include "A_os_includes.h"
+#ifndef	SAMPLE_PROCESSES_ENABLED
 
-#ifndef A_OS_INCLUDES_H_
-#define A_OS_INCLUDES_H_
+void process2_empty_init(uint32_t process_id)
+{
+}
 
-#include "../A_os/kernel/A.h"
-#include "../A_os//kernel/system_default.h"
-#include "../A_os/kernel/A_exported_functions.h"
+void process2_empty(uint32_t process_id)
+{
+	wait_event(HW_SLEEP_FOREVER);
+}
+#endif // #ifndef	SAMPLE_PROCESSES_ENABLED
 
-#include <stdio.h>
-#include <string.h>
 
-#endif /* A_OS_INCLUDES_H_ */

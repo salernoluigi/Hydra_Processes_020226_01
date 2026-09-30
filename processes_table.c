@@ -9,34 +9,45 @@
 
 #ifndef	SAMPLE_PROCESSES_ENABLED
 
-extern	void process_1(uint32_t process_id);	//This is process1
-extern	void process_1_init(uint32_t process_id);
+extern	void hydra_process_1_main(uint32_t process_id);	//This is process1
+extern	void hydra_process_1_main_init(uint32_t process_id);
 
-extern	void process_2(uint32_t process_id);	//This is process2
-extern	void process_2_init(uint32_t process_id);
+extern	void hydra_process_2_USB(uint32_t process_id);	//This is process2
+extern	void hydra_process_2_USB_init(uint32_t process_id);
 
-extern	void process_3(uint32_t process_id);	//This is process3
+extern	void hydra_process_3_EE(uint32_t process_id);	//This is process3
+extern	void hydra_process_3_EE_init(uint32_t process_id);	//This is process3
 extern	void process_4(uint32_t process_id);	//This is process4 of the application
+
+extern	void process1_empty(uint32_t process_id);	//This is process1
+extern	void process1_test(uint32_t process_id);	//This is process1
+
+extern	void process1_empty_init(uint32_t process_id);
+
+extern	void process2_empty(uint32_t process_id);	//This is process2
+extern	void process2_empty_init(uint32_t process_id);
+
 
 USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 {
 		{
-				.user_init = process_1_init,
-				.user_process = process_1,
-				.stack_size = 1024,
+				.user_init = hydra_process_1_main_init,
+				.user_process = hydra_process_1_main,
+				.stack_size = 4096,
 		},
 		{
-				.user_init = process_2_init,
-				.user_process = process_2,
-				.stack_size = 1024,
+				.user_init = hydra_process_2_USB_init,
+				.user_process = hydra_process_2_USB,
+				.stack_size = 4096,
 		},
 		{
-				.user_process = process_3,
-				.stack_size = 1024,
+				.user_init = hydra_process_3_EE_init,
+				.user_process = hydra_process_3_EE,
+				.stack_size = 4096,
 		},
 		{
 				.user_process = process_4,
-				.stack_size = 1024,
+				.stack_size = 256,
 		}
 };
 #endif // #ifndef	SAMPLE_PROCESSES_ENABLED

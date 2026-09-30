@@ -14,20 +14,17 @@
  * Project : A_os
 */
 /*
- * A_os_includes.h
+ * weak_ks_functions.h
  *
- *  Created on: Mar 13, 2026
+ *  Created on: Jun 10, 2026
  *      Author: fil
  */
 
-#ifndef A_OS_INCLUDES_H_
-#define A_OS_INCLUDES_H_
+#ifndef WEAK_KS_FUNCTIONS_H_
+#define WEAK_KS_FUNCTIONS_H_
 
-#include "../A_os/kernel/A.h"
-#include "../A_os//kernel/system_default.h"
-#include "../A_os/kernel/A_exported_functions.h"
+extern	uint32_t	usb_parser(USB_DriverStruct_t	*USB_Driver);
+extern	uint32_t	display_parser(UART_DriverStruct_t	*UART_Driver);
 
-#include <stdio.h>
-#include <string.h>
 
-#endif /* A_OS_INCLUDES_H_ */
+#endif /* WEAK_KS_FUNCTIONS_H_ */

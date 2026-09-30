@@ -21,13 +21,21 @@
  */
 #include "main.h"
 #include "A_os_includes.h"
-#include "hydra_020226_00.h"
+#include "hydra.h"
+
 
 #ifndef	SAMPLE_PROCESSES_ENABLED
-/*
-#define	__STDRAM_DATA_AREA	__attribute__ ((aligned (32)))
-#define	__ERAM_DATA_AREA	__attribute__((section(".d2ram"))) __attribute__ ((aligned (32)))
-*/
+__attribute__ ((aligned (32)))	HYDRA_Struct_t			HYDRA_Struct;
+__attribute__ ((aligned (32)))	BOARD_Config_Struct_t	BOARD_Config =
+{
+		.header = HYDRA_CONFIG_HEADER,
+		.board_name = "Hydra",
+		.board_version = "1.0",
+		.os_version = A_OS_VERSION,
+		.gpio_tim_output = ALL_GPIO,
+		.footer = HYDRA_CONFIG_FOOTER,
+};
+
 /* ADC Data */
 __STDRAM_DATA_AREA	ADC_DriverStruct_t	ADC_Drv =
 {
@@ -108,9 +116,9 @@ __STDRAM_DATA_AREA	UART_DriverStruct_t Uart7_Easy_Drv =
 	.uart = &huart7,
 	.wakeup_id = WAKEUP_FROM_UART7_IRQ,
 	.timeout = 10,
-	//.flags = UART_USES_DMA_TX | UART_USES_DMA_RX | UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
+	.flags = UART_USES_DMA_TX | UART_USES_DMA_RX | UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
 	//.flags = UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
-	.flags = UART_USES_DMA_TX | UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
+	//.flags = UART_USES_DMA_TX | UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
 
 };
 
@@ -128,71 +136,6 @@ __STDRAM_DATA_AREA	UART_DriverStruct_t Uart8_BT_Drv =
 	//.flags = UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
 };
 
-/* NEOLED */
-#define	NUM_LEDS		8
-#define WS2812_BUF_SIZE 		(WS2812_RESET_HEAD + (NUM_LEDS * WS2812_LEDBPP) + WS2812_RESET_TAIL)
-
-uint16_t ws2812_work_buf[WS2812_BUF_SIZE];
-
-
-NeoPixel_Struct_t	glow_buffer[NUM_LEDS];
-NeoPixel_Struct_t	worm_buffer[NUM_LEDS];
-NeoPixel_Struct_t	flasher_buffer[NUM_LEDS];
-
-Worm_Struct_t		WormBuf =
-{
-		.led_buf = worm_buffer,
-		.r = 0,
-		.g = 0,
-		.b = 255,
-		.direction = WORM_WS2812_COUNTER_CLOCKWISE,
-		.worm_len = NUM_LEDS,
-};
-
-Glow_Struct_t		GlowBuf =
-{
-		.led_buf = glow_buffer,
-		.r = 0,
-		.g = 0,
-		.b = 255,
-		.glow_mode = WS2812_GLOW_ONLY_DOWN,
-		.initial_brightness = 0x10,
-		.final_brightness = 0xf0,
-		.glow_step = 1,
-		.glow_len = NUM_LEDS,
-};
-
-Flasher_Struct_t		FlasherBuf =
-{
-		.led_buf = flasher_buffer,
-		.r_on = 0,
-		.g_on = 0,
-		.b_on = 255,
-		.r_off = 255,
-		.g_off = 0,
-		.b_off = 0,
-		.brightness = 128,
-		.flasher_len = NUM_LEDS,
-};
-
-WS2812_DriverStruct_t	WS2812_Drv =
-{
-		.ws2812_timer = &htim17,
-		.ws2812_timer_channel = TIM_CHANNEL_1,
-		.ws2812_numleds = NUM_LEDS,
-		.ws2812_work_buf = &ws2812_work_buf[0],
-		.ws2812_work_buf_buflen = WS2812_BUF_SIZE,
-		.ws2812_arr_val = 211,
-		.wakeup_id = WAKEUP_FROM_TIM_IRQ,
-};
-
-/* sd card */
-__STDRAM_DATA_AREA	SDCARD_DriverStruct_t SDCARD =
-{
-	.hsd = &hsd1,
-	.sd_detect_port = SDMMC1_CD_GPIO_Port,
-	.sd_detect_bit = SDMMC1_CD_Pin,
-};
 
 /* PWM */
 __STDRAM_DATA_AREA	Pwm_Control_DriverStruct_t	Pwm_TIM1_Control =
@@ -252,37 +195,6 @@ Stepper_Control_DriverStruct_t	Stepper_Control =
 		.wakeup_id = WAKEUP_FROM_SW_MODULES_IRQ,
 };
 
-#define	I2CMEM_BUFFERSIZE	I2C_24XX_PAGESIZE*4
-uint8_t	i2c_tx_buffer[I2C_24XX_PAGESIZE*2];
-uint8_t	i2c_rx_buffer[I2C_24XX_PAGESIZE*2];
-
-I2C_24xx_DriverStruct_t	i2c_24xx_Drv =
-{
-		.bus = &hi2c1,
-		.i2c_scl_port = MEM_I2C1_SCL_GPIO_Port,
-		.i2c_scl_bit = MEM_I2C1_SCL_Pin,
-		.read_buf  = HYDRA_Struct.i2cBufr,
-		.write_buf = HYDRA_Struct.i2cBufw,
-		.device_address = I2C_24XX_ADDRESS,
-		.device_address_size = I2C_MEMADD_SIZE_16BIT,
-		.device_size = 65536,
-		.flags = I2C_FLAGS_USES_READ_DMA | I2C_FLAGS_USES_WRITE_DMA | I2C_FLAGS_WAKEUP_ON_READ | I2C_FLAGS_WAKEUP_ON_WRITE | I2C_FLAGS_WAIT_ON_WRITE_COMPLETE | I2C_FLAGS_WAIT_ON_READ_COMPLETE,
-		//.flags = I2C_FLAGS_WAKEUP_ON_READ | I2C_FLAGS_WAKEUP_ON_WRITE,
-		.wakeup_id = WAKEUP_FROM_I2C1_IRQ,
-};
-
-
-__attribute__ ((aligned (32)))	HYDRA_Struct_t			HYDRA_Struct;
-__attribute__ ((aligned (32)))	BOARD_Config_Struct_t	BOARD_Config =
-{
-		.header = HYDRA_CONFIG_HEADER,
-		.board_name = "Hydra",
-		.board_version = "0.0",
-		.os_version = A_OS_VERSION,
-		.gpio_tim_output = ALL_GPIO,
-		.footer = HYDRA_CONFIG_FOOTER,
-};
-
 void hydra_register_devices(void)
 {
 	adc_register(&ADC_Drv);
@@ -292,7 +204,6 @@ void hydra_register_devices(void)
 	uart_register(&Uart5_3G_Drv);
 	uart_register(&Uart7_Easy_Drv);
 	uart_register(&Uart8_BT_Drv);
-	sdcard_register(&SDCARD);
 	stepper_register(&Stepper_Control);
 	pwm_register(&Pwm_TIM1_Control);
 	pwm_register(&Pwm_TIM3_Control);
@@ -303,14 +214,8 @@ void hydra_register_devices(void)
 	pwm_init(&Pwm_TIM4_Control);
 	pwm_init(&Pwm_TIM5_Control);
 	pwm_init(&Pwm_TIM15_Control);
-	i2c_24xx_register(&i2c_24xx_Drv);
 	bzero(uart3_LCD_rx_buffer,UART3_RX_BUF_SIZE);
 	set_default_BOARD_Config();
-	i2c_24xx_register(&i2c_24xx_Drv);
-
-	if ( BOARD_Config.neoled_num <= NUM_LEDS )
-		WS2812_Drv.ws2812_numleds = BOARD_Config.neoled_num;
-	ws2812_register(&WS2812_Drv);
 }
 
 #endif //#ifdef SAMPLE_PROCESSES_ENABLED

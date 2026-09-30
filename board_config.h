@@ -14,20 +14,15 @@
  * Project : A_os
 */
 /*
- * A_os_includes.h
+ * board_config.h
  *
- *  Created on: Mar 13, 2026
+ *  Created on: Sep 29, 2026
  *      Author: fil
  */
 
-#ifndef A_OS_INCLUDES_H_
-#define A_OS_INCLUDES_H_
+#ifndef BOARD_CONFIG_H_
+#define BOARD_CONFIG_H_
 
-#include "../A_os/kernel/A.h"
-#include "../A_os//kernel/system_default.h"
-#include "../A_os/kernel/A_exported_functions.h"
 
-#include <stdio.h>
-#include <string.h>
 
-#endif /* A_OS_INCLUDES_H_ */
+#endif /* BOARD_CONFIG_H_ */
