@@ -36,6 +36,7 @@ uint32_t global_timer_run(void)
 {
 	if ( HYDRA_Struct.global_timer_callback != NULL )
 		HYDRA_Struct.global_timer_callback(0,0);
+	update_counters(HYDRA_Struct.running_function);
 	if ( HYDRA_Struct.global_timer_status == GLOBAL_TIMER_RUNNING )
 	{
 		set_tim_buf(HYDRA_Struct.global_timer,HYDRA_Struct.timbuf);
@@ -55,6 +56,8 @@ uint32_t global_timer_run(void)
 
 uint32_t global_timer_stop(void)
 {
+	HYDRA_Struct.running_function = 0;
+	store_counters();
 	HYDRA_Struct.global_timer_status = GLOBAL_TIMER_STOP;
 	HYDRA_Struct.global_timer = HYDRA_Struct.global_timer_value;
 	set_tim_buf(HYDRA_Struct.global_timer,HYDRA_Struct.timbuf);

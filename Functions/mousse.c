@@ -52,8 +52,8 @@ uint32_t mousse_set_out(uint32_t level)
 {
 	if ( level )
 	{
+		HYDRA_Struct.running_function = MOUSSE_OP;
 		HYDRA_Struct.global_timer_status = GLOBAL_TIMER_RUNNING;
-		global_timer_run();
 		HAL_GPIO_WritePin(MOUSSE_PORT, MOUSSE_PIN, GPIO_PIN_SET);
 		HYDRA_Struct.global_timer_elapsed_callback = mousse_timeout_callback;
 		HYDRA_Struct.cleanup_function = mousse_cleanup_function;

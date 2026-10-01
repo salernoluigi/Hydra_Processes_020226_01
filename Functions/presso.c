@@ -133,6 +133,7 @@ uint8_t i;
 		pwm_stop(&Presso_HEAT[i].Pwm_TIMx_Control,Presso_HEAT[i].Pwm_TIMx_Control_Channel);
 
 	HYDRA_Struct.global_timer_status = GLOBAL_TIMER_STOP;
+	global_timer_stop();
 	for(i=0;i<PRESSO_GPIO_NR;i++)
 		set_gpio_mode(Presso_GPIO[i].port, Presso_GPIO[i].bit,MODE_AF);
 	for(i=0;i<PRESSO_HEAT_NR;i++)
@@ -142,7 +143,6 @@ uint8_t i;
 	task_delay(50);
 	send_numeric_dwin_packet(&Uart3_LCD_Drv,0x0682,AIRPEN_VP,0);
 	task_delay(50);
-	global_timer_stop();
 	HYDRA_Struct.pump_status = 0;
 	return 0;
 }
@@ -156,8 +156,9 @@ static uint32_t presso_cleanup_function(uint32_t	val0,uint32_t	val1)
 uint32_t presso_start(uint32_t level)
 {
 uint8_t i;
-	if ( level == 1 )
+	if ( level )
 	{
+		HYDRA_Struct.running_function = PRESSO_OP;
 		HYDRA_Struct.global_timer_status = GLOBAL_TIMER_RUNNING;
 		HYDRA_Struct.presso_program = 2;
 		Presso_programs_var = &Presso_programs[HYDRA_Struct.presso_program];
@@ -185,7 +186,7 @@ uint8_t i;
 
 		return Presso_Sequencer.step_time | Presso_Sequencer.number_of_steps; // if returns 0 the ee is uninitialized
 	}
-	if ( level == 0 )
+	else
 	{
 		presso_timeout_callback(0,0);
 	}

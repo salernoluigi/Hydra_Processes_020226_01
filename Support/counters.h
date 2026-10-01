@@ -39,8 +39,12 @@
 typedef struct
 {
 	uint32_t			op_time[9];
-	uint8_t				time_to_update;
+	uint32_t			time_to_update;
 }Hydra_Counters_TypeDef;
 
 #define	WRITE_AFTER_120_SEC		120
+
+uint32_t	update_counters(uint8_t op);
+uint32_t	store_counters(void);
+
 #endif /* HYDRA_COUNTERS_H_ */

@@ -186,8 +186,8 @@ uint32_t hydrapen_start(uint32_t level)
 		hydrapen_status = 1;
 		task_delay(50);
 		send_numeric_dwin_packet(&Uart3_LCD_Drv,0x0682,HYDRAPEN_ALARM_VP,1);
+		HYDRA_Struct.running_function = HYDRAPEN_OP;
 		HYDRA_Struct.global_timer_status = GLOBAL_TIMER_RUNNING;
-		global_timer_run();
 		HYDRA_Struct.global_timer_elapsed_callback = hydrapen_timeout_callback;
 		HYDRA_Struct.cleanup_function = hydrapen_cleanup_function;
 		set_gpio_mode(VORTEX_PROP_PORT,VORTEX_PROP_PIN,MODE_OUTPUT);

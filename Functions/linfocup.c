@@ -122,8 +122,8 @@ uint32_t	linfocup_set_out(uint16_t	data1_val)
 		pwm_set_width(&Pwm_TIM15_Control,intensity,TIM_CHANNEL_1);
 		pwm_start(&Pwm_TIM15_Control,TIM_CHANNEL_1);
 
+		HYDRA_Struct.running_function = LINFOCUP_OP;
 		HYDRA_Struct.global_timer_status = GLOBAL_TIMER_RUNNING;
-		global_timer_run();
 		HYDRA_Struct.global_timer_elapsed_callback = linfocup_timeout_callback;
 		HYDRA_Struct.global_timer_callback = linfocup_timer_callback;
 		HYDRA_Struct.cleanup_function = linfocup_cleanup_function;

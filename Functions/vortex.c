@@ -158,7 +158,7 @@ static uint32_t vortex_cleanup_function(uint32_t	val0,uint32_t	val1)
 
 uint32_t vortex_start(uint32_t level)
 {
-	if ( level == 1 )
+	if ( level )
 	{
 		if ( HYDRA_Struct.stepper_running == 1 )
 		{
@@ -172,7 +172,9 @@ uint32_t vortex_start(uint32_t level)
 		HAL_GPIO_WritePin(VORTEX_PUMP24V_PORT, VORTEX_PUMP24V_PIN, GPIO_PIN_SET);
 
 		HYDRA_Struct.cleanup_function = vortex_cleanup_function;
+		HYDRA_Struct.running_function = VORTEX_OP;
 		HYDRA_Struct.global_timer_status = GLOBAL_TIMER_RUNNING;
+
 		vortex_status = 1;
 		switch ( last_stepper_speed )
 		{

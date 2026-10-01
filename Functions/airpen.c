@@ -59,7 +59,6 @@ uint32_t airpen_set_out(uint32_t level)
 	if ( level )
 	{
 		HYDRA_Struct.global_timer_status = GLOBAL_TIMER_RUNNING;
-		global_timer_run();
 		HAL_GPIO_WritePin(AIRPEN_PUMP_PORT, AIRPEN_PUMP_PIN, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(AIRPEN_EV3WARIA_PORT, AIRPEN_EV3WARIA_PIN, GPIO_PIN_SET);
 		HAL_GPIO_WritePin(AIRPEN_EV_PORT, AIRPEN_EV_PIN, GPIO_PIN_SET);
@@ -84,7 +83,6 @@ uint32_t airpen_set_out(uint32_t level)
 		HYDRA_Struct.cleanup_function = NULL;
 		HYDRA_Struct.airpen_enable = 0;
 		HYDRA_Struct.pump_status = 0;
-		HYDRA_Struct.running_function = 0;
 	}
 	return 0;
 }

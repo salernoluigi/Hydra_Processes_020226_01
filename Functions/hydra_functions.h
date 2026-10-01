@@ -104,8 +104,6 @@
 #define IONOPEN_SPEED_VP			0x1804	// 12V pwm motor
 #define IONOPEN_CLEAN_VP			0x1805
 
-
-
 #define TIMEFIELD_VP  	  	0x2000
 #define TIMESET_VP  	  	0x2001
 
