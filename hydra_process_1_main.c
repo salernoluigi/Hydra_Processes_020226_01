@@ -47,7 +47,6 @@ uint32_t	count=0;
 	uart_start_receive(&Uart3_LCD_Drv);
 	uart_start_receive(&Uart7_Easy_Drv);
 	global_timer_init();
-	global_timer_stop();
 	HAL_GPIO_WritePin(SLEEP_3G_GPIO_Port, SLEEP_3G_Pin, GPIO_PIN_RESET);
 	while(1)
 	{

@@ -29,6 +29,7 @@ uint16_t 	timer=1800;
 uint32_t global_timer_init(void)
 {
 	HYDRA_Struct.global_timer_value = HYDRA_Struct.global_timer = GLOBAL_TIMER_DEFAULT;
+	HYDRA_Struct.global_timer_status = GLOBAL_TIMER_STOP;
 	return 0;
 }
 
