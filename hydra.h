@@ -143,7 +143,6 @@ typedef struct
 	uint8_t			stepper_running;
 	uint16_t		stepper_running_timeout;
 	uint8_t			ee_sd_flags;
-	uint8_t			presso_enable;
 	uint8_t			presso_program;
 	uint8_t			running_function;
 	uint16_t		adc_data[ADCVAL_SAMPLES];
@@ -171,14 +170,14 @@ typedef struct
 #define	EE_BOARD_NAMEVERSION_SIZE		256
 #define	EE_BOARD_NAMEVERSION_END		(EE_BOARD_NAMEVERSION_ADDRESS+EE_BOARD_NAMEVERSION_SIZE)
 
-#define	EE_PRESSO_PROGSTART				0x100
+#define	EE_COUNTERS_START				0x100
+#define	EE_COUNTERS_SIZE				256
+#define	EE_COUNTERS_END					(EE_COUNTERS_START+EE_COUNTERS_SIZE)
+
+#define	EE_PRESSO_PROGSTART				0x200
 #define	EE_PRESSO_PROGRAM_SIZE			256
 #define	EE_PRESSO_NUM_PROGRAM			16
 #define	EE_PRESSO_PROGEND				(EE_PRESSO_PROGSTART+(EE_PRESSO_PROGRAM_SIZE*EE_PRESSO_NUM_PROGRAM))
-
-#define	EE_COUNTERS_START				EE_PRESSO_PROGEND
-#define	EE_COUNTERS_SIZE				256
-#define	EE_COUNTERS_END					(EE_COUNTERS_START+EE_COUNTERS_SIZE)
 
 #define	HYDRA_NAME_LEN					32
 #define	HYDRA_VERSION_LEN				32

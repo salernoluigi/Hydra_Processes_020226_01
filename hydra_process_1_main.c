@@ -56,6 +56,8 @@ uint32_t	count=0;
 		{
 			process_led();
 			jetpeel_timer_call();
+			if ( HYDRA_Struct.running_function == PRESSO_OP )
+				presso_sequencer_sm();
 			count++;
 
 			if (( count == 5 ) || ( count == 10 ))

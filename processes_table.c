@@ -17,7 +17,7 @@ extern	void hydra_process_2_USB_init(uint32_t process_id);
 
 extern	void hydra_process_3_EE(uint32_t process_id);	//This is process3
 extern	void hydra_process_3_EE_init(uint32_t process_id);	//This is process3
-extern	void process_4(uint32_t process_id);	//This is process4 of the application
+extern	void process_4_debugger(uint32_t process_id);	//This is process4 of the application
 
 extern	void process1_empty(uint32_t process_id);	//This is process1
 extern	void process1_test(uint32_t process_id);	//This is process1
@@ -46,8 +46,8 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 				.stack_size = 4096,
 		},
 		{
-				.user_process = process_4,
-				.stack_size = 256,
+				.user_process = process_4_debugger,
+				.stack_size = 4096,
 		}
 };
 #endif // #ifndef	SAMPLE_PROCESSES_ENABLED

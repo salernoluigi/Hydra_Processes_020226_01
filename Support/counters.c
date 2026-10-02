@@ -40,9 +40,10 @@ uint32_t	update_counters(uint8_t op)
 
 uint32_t	store_counters(void)
 {
-	Hydra_Counters.time_to_update = 0;
 	bzero(counter_buffer_tx,EE_COUNTERS_SIZE);
+	memcpy(counter_buffer_tx,(char *)&Hydra_Counters,sizeof(Hydra_Counters_TypeDef));
 	i2c_24xx_write(&i2c_24xx_Drv,EE_COUNTERS_START,counter_buffer_tx, EE_COUNTERS_SIZE);
+	Hydra_Counters.time_to_update = 0;
 	return 0;
 }
 

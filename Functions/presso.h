@@ -32,10 +32,6 @@ typedef struct
 }Presso_Sequencer_TypeDef;
 /*state*/
 #define	SEQUENCER_STATE_IDLE		0x00
-#define	SEQUENCER_STATE_OPENING		0x01
-#define	SEQUENCER_STATE_RUNNING		0x02
-#define	SEQUENCER_STATE_FINISHED	0x04
-#define	SEQUENCER_STATE_PAUSE		0x40
 #define	SEQUENCER_STOP_AT_END		0x80
 
 #define	PRESSO_GPIO_NR				10

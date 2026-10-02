@@ -35,11 +35,13 @@ uint32_t global_timer_init(void)
 
 uint32_t global_timer_run(void)
 {
+	if ( HYDRA_Struct.running_function == 0 )
+		return 0;
 	if ( HYDRA_Struct.global_timer_callback != NULL )
 		HYDRA_Struct.global_timer_callback(0,0);
-	update_counters(HYDRA_Struct.running_function);
 	if ( HYDRA_Struct.global_timer_status == GLOBAL_TIMER_RUNNING )
 	{
+		update_counters(HYDRA_Struct.running_function);
 		set_tim_buf(HYDRA_Struct.global_timer,HYDRA_Struct.timbuf);
 		send_string_dwin_pkt(&Uart3_LCD_Drv,0x1382,TIMEFIELD_VP,HYDRA_Struct.timbuf);
 		if ( HYDRA_Struct.global_timer )

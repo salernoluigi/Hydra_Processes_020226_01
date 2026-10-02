@@ -34,7 +34,8 @@ extern	FRESULT list_directory(const char *path);
 extern	uint32_t find_files_by_extension(const char *path,const char *extension);
 extern					Hydra_Counters_TypeDef	Hydra_Counters;
 
-char					BoardNameVersion[256];
+char					BoardNameVersion[EE_BOARD_NAMEVERSION_SIZE+EE_COUNTERS_SIZE];
+
 Presso_ee_TypeDef		Presso_on_sd;
 Presso_sdcard_TypeDef	Presso_sdcard[EE_PRESSO_NUM_PROGRAM];
 
@@ -292,19 +293,20 @@ void hydra_process_3_EE_init(uint32_t process_id)
 {
 }
 
+uint32_t	eeret_val;
+
 uint32_t	size_struct;
-uint8_t		boardname_buffer_tx[EE_BOARD_NAMEVERSION_SIZE];
 void hydra_process_3_EE(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-uint8_t		cntr = 0,boardname_initialized = 0,boardname_checked = 0,boardname_updated = 0;
+uint8_t		cntr = 0,boardname_restored = 0,boardname_checked = 0;
 
 	sdcard_register(&HydraSDCARD);
 	if ( i2c_24xx_register(&i2c_24xx_Drv) == 0 )
 		HYDRA_Struct.ee_sd_flags |= HYDRA_I2CMEM_PRESENT;
 	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	bzero((char *)&Presso_programs[0],sizeof(Presso_ee_TypeDef)*EE_PRESSO_NUM_PROGRAM);
-	bzero(BoardNameVersion,sizeof(BoardNameVersion));
+	bzero(BoardNameVersion,EE_BOARD_NAMEVERSION_SIZE+EE_COUNTERS_SIZE);
 	size_struct = sizeof(Presso_ee_TypeDef);
 
 	while(1)
@@ -313,41 +315,28 @@ uint8_t		cntr = 0,boardname_initialized = 0,boardname_checked = 0,boardname_upda
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
-			if ( HYDRA_Struct.presso_enable )
-				presso_sequencer_sm();
 			cntr++;
-			if ( cntr == 2)
+			if ( cntr == 1)
 			{
-				if ( boardname_initialized == 0)
+				if ( boardname_restored == 0)
 				{
-					boardname_initialized = 1;
-					i2c_24xx_read(&i2c_24xx_Drv,EE_BOARD_NAMEVERSION_ADDRESS,(uint8_t *)BoardNameVersion,EE_BOARD_NAMEVERSION_SIZE);
+					boardname_restored = 1;
+					boardname_checked = 0;
+					eeret_val = i2c_24xx_read(&i2c_24xx_Drv,EE_BOARD_NAMEVERSION_ADDRESS,(uint8_t *)BoardNameVersion,EE_BOARD_NAMEVERSION_SIZE+EE_COUNTERS_SIZE);
 				}
 			}
 			if ( cntr == 5)
 			{
-				if (( boardname_initialized == 1) && ( boardname_checked == 0))
+				if (( boardname_restored == 1) && ( boardname_checked == 0))
 				{
 					if ( strcmp(BoardNameVersion,BOARD_NAMEVERSION))
 					{
-						bzero(boardname_buffer_tx,EE_BOARD_NAMEVERSION_SIZE);
-						sprintf((char *)boardname_buffer_tx,BOARD_NAMEVERSION);
-						i2c_24xx_write(&i2c_24xx_Drv,EE_BOARD_NAMEVERSION_ADDRESS,boardname_buffer_tx, EE_BOARD_NAMEVERSION_SIZE);
-						boardname_checked = 1;
-						boardname_updated = 1;
+						bzero(BoardNameVersion,EE_BOARD_NAMEVERSION_SIZE+EE_COUNTERS_SIZE);
+						sprintf((char *)BoardNameVersion,BOARD_NAMEVERSION);
+						eeret_val = i2c_24xx_write(&i2c_24xx_Drv,EE_BOARD_NAMEVERSION_ADDRESS,(uint8_t *)BoardNameVersion, EE_BOARD_NAMEVERSION_SIZE+EE_COUNTERS_SIZE);
 					}
-					else
-						boardname_checked = 1;
-				}
-			}
-			if ( cntr == 8)
-			{
-				if ( boardname_updated == 1)
-				{
-					bzero(boardname_buffer_tx,EE_COUNTERS_SIZE);
-					i2c_24xx_write(&i2c_24xx_Drv,EE_COUNTERS_START,boardname_buffer_tx, EE_COUNTERS_SIZE);
-					bzero((uint8_t *)&Hydra_Counters,sizeof(Hydra_Counters_TypeDef));
-					boardname_updated = 0;
+					boardname_checked = 1;
+					memcpy((uint8_t *)&Hydra_Counters,&BoardNameVersion[EE_BOARD_NAMEVERSION_SIZE],sizeof(Hydra_Counters_TypeDef));
 				}
 			}
 			if ( cntr == 10)
@@ -389,8 +378,6 @@ uint8_t		cntr = 0,boardname_initialized = 0,boardname_checked = 0,boardname_upda
 						{
 							HYDRA_Struct.ee_sd_flags |= HYDRA_I2CMEM_LOADED;
 							HYDRA_Struct.ee_sd_flags &= ~HYDRA_I2CMEM_READ_IN_PROGRESS;
-							presso_start(1);
-							HYDRA_Struct.presso_enable = 1;
 						}
 					}
 				}

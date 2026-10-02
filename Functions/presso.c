@@ -128,7 +128,11 @@ void presso_sequencer_set_heater(uint16_t heater_nr , uint16_t heater_pw)
 static uint32_t presso_timeout_callback(uint32_t	val0,uint32_t	val1)
 {
 uint8_t i;
+
 	presso_sequencer_set_gpio(0);
+	store_counters();
+	HYDRA_Struct.running_function = 0;
+
 	for(i=0;i<PRESSO_HEAT_NR;i++)
 		pwm_stop(&Presso_HEAT[i].Pwm_TIMx_Control,Presso_HEAT[i].Pwm_TIMx_Control_Channel);
 
@@ -160,7 +164,6 @@ uint8_t i;
 	{
 		HYDRA_Struct.running_function = PRESSO_OP;
 		HYDRA_Struct.global_timer_status = GLOBAL_TIMER_RUNNING;
-		HYDRA_Struct.presso_program = 2;
 		Presso_programs_var = &Presso_programs[HYDRA_Struct.presso_program];
 
 		Presso_Sequencer.current_step = 0;
@@ -188,34 +191,30 @@ uint8_t i;
 	}
 	else
 	{
-		presso_timeout_callback(0,0);
+		Presso_Sequencer.state |= SEQUENCER_STOP_AT_END;
 	}
 	return 0;
-}
-
-void presso_sequencer_halt(void)
-{
-	Presso_Sequencer.current_step = 0;
-	Presso_Sequencer.state = SEQUENCER_STATE_FINISHED;
 }
 
 void presso_sequencer_sm(void)
 {
 uint16_t value,heater,i;
-	if (( Presso_Sequencer.state & SEQUENCER_STATE_PAUSE) == SEQUENCER_STATE_PAUSE)
+	if ( HYDRA_Struct.running_function != PRESSO_OP )
 		return;
-
 	if ( Presso_Sequencer.step_time )
 		Presso_Sequencer.step_time--;
 	if ( Presso_Sequencer.step_time == 0 )
 	{
+		update_counters(PRESSO_OP);
 		Presso_Sequencer.step_time = Presso_programs[HYDRA_Struct.presso_program].program_step_time;
 		Presso_Sequencer.current_step ++;
 		if ( Presso_Sequencer.current_step >= Presso_Sequencer.number_of_steps)
 		{
 			if (( Presso_Sequencer.state & SEQUENCER_STOP_AT_END) == SEQUENCER_STOP_AT_END)
 			{
-				presso_sequencer_halt();
+				Presso_Sequencer.current_step = 0;
+				Presso_Sequencer.state = SEQUENCER_STATE_IDLE;
+				presso_timeout_callback(0,0);
 				return;
 			}
 			Presso_Sequencer.current_step = 0;
