@@ -95,14 +95,13 @@ char	outconfig[32];
 char	csv_ee_line[64];
 
 char		filesinfo[128];
-//extern		Presso_sdcard_TypeDef	Presso_sdcard[EE_PRESSO_NUM_PROGRAM];
 uint32_t	file_number=0;
-// Helper function to check if a string ends with a specific extension (case-insensitive)
 
 uint8_t		xmodem_rx_usb_enable;
 uint8_t		xmodem_rx_usb_enable_poll;
 uint8_t		tim_downscale=0;
 
+// Helper function to check if a string ends with a specific extension (case-insensitive)
 int has_extension(const char *filename, const char *ext)
 {
     size_t len = strlen(filename);
