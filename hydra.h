@@ -199,8 +199,50 @@ typedef struct
 	uint32_t			neoled_num;
 	uint8_t				unused[HYDRA_CONFIG_SIZE - (1+32+32+32+(4*HYDRA_TIM_NUM)+(2*HYDRA_TIM_NUM)+4+4+4+1)];
 	uint8_t				footer;
-}BOARD_Config_Struct_t;
+}HYDRA_BOARD_Config_Struct_t;
 
+typedef struct
+{
+	uint8_t 		usb_status;
+	uint8_t			command_from_usb;
+	uint32_t		parameter1_from_usb;
+	uint32_t		parameter2_from_usb;
+	uint32_t		parameter3_from_usb;
+	uint32_t		parameter4_from_usb;
+	uint32_t		parameter5_from_usb;
+	uint32_t		parameter6_from_usb;
+	uint32_t		parameter7_from_usb;
+	char			string1_from_usb[32];
+	char			string2_from_usb[32];
+	uint8_t			usb_rx_buf_rxed[XMODEM_LINE_LEN];
+	uint8_t			usb_packed_rx_buf[XMODEM_LINE_LEN];
+	uint8_t			usb_rx_buf_len;
+	uint8_t			usb_rx_buf_index;
+	uint8_t			usb_tx_buf[XMODEM_LINE_LEN];
+	uint8_t			usb_tx_buf_len;
+	uint8_t 		usb_flags;
+}HYDRA_USB_TypeDef;
+/* usb_status */
+#define	USB_XMO_PHASE			0x01
+#define	USB_XMO_INITIALIZED		0x02
+#define	USB_XMO_POLL			0x04
+
+/* usb_flags */
+#define	USB_FLAGS_LOGOSENT		0x02
+#define	USB_FLAGS_SENDINFO		0x04
+#define	USB_FLAGS_SENDDATA		0x08
+#define	USB_FLAGS_SENDREPLY		0x10
+#define	USB_FLAGS_IHEXOK		0x20
+#define	USB_FLAGS_HEADEROK		0x40
+#define	USB_FLAGS_PKTCOMPLETE	0x80
+
+/* USB Defines */
+#define		USB_BUF_LEN			128
+#define		HYDRA_GETVERINFO	'V'
+#define		HYDRA_GETCOUNTERS	'C'
+#define		HYDRA_ACTIVE		'A'
+
+#define		COUNTERS_UNIT		60
 
 #define	TIM1_CH1_PWM		0x00000001
 #define	TIM1_CH2_PWM		0x00000002
@@ -244,8 +286,8 @@ typedef struct
 #define	__PRESSO_DATA_AREA	__attribute__ ((aligned (32)))
 
 
-extern	HYDRA_Struct_t			HYDRA_Struct;
-extern	BOARD_Config_Struct_t	BOARD_Config;
+extern	HYDRA_Struct_t				HYDRA_Struct;
+extern	HYDRA_BOARD_Config_Struct_t	HYDRA_BOARD_Config;
 
 extern	uint8_t	i2c_tx_buffer[I2C_24XX_PAGESIZE*2];
 extern	uint8_t	i2c_rx_buffer[I2C_24XX_PAGESIZE*2];
@@ -259,6 +301,7 @@ extern	void stepper_callback(uint32_t value);
 #include "Support/support_functions.h"
 #include "Support/weak_ks_functions.h"
 #include "Support/counters.h"
+#include "Support/usb_support.h"
 
 #include "Lcd/lcd_parser.h"
 

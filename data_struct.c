@@ -25,8 +25,8 @@
 
 
 #ifndef	SAMPLE_PROCESSES_ENABLED
-__attribute__ ((aligned (32)))	HYDRA_Struct_t			HYDRA_Struct;
-__attribute__ ((aligned (32)))	BOARD_Config_Struct_t	BOARD_Config =
+__attribute__ ((aligned (32)))	HYDRA_Struct_t				HYDRA_Struct;
+__attribute__ ((aligned (32)))	HYDRA_BOARD_Config_Struct_t	HYDRA_BOARD_Config =
 {
 		.header = HYDRA_CONFIG_HEADER,
 		.board_name = "Hydra",
@@ -215,7 +215,7 @@ void hydra_register_devices(void)
 	pwm_init(&Pwm_TIM5_Control);
 	pwm_init(&Pwm_TIM15_Control);
 	bzero(uart3_LCD_rx_buffer,UART3_RX_BUF_SIZE);
-	set_default_BOARD_Config();
+	set_default_HYDRA_BOARD_Config();
 }
 
 #endif //#ifdef SAMPLE_PROCESSES_ENABLED

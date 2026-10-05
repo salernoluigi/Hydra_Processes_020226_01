@@ -44,6 +44,8 @@ typedef struct
 
 #define	WRITE_AFTER_120_SEC		120
 
+extern	Hydra_Counters_TypeDef	Hydra_Counters;
+
 uint32_t	update_counters(uint8_t op);
 uint32_t	store_counters(void);
 

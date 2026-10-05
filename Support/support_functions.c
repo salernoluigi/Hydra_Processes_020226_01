@@ -187,129 +187,105 @@ void get_adc_values(void)
 	}
 }
 
-uint32_t read_BOARD_Config(void)
-{
-	if ( i2c_24xx_read(&i2c_24xx_Drv,0,(uint8_t *)&BOARD_Config,HYDRA_CONFIG_SIZE) )
-		return 1;
-	if (( BOARD_Config.header == HYDRA_CONFIG_HEADER) && ( BOARD_Config.footer == HYDRA_CONFIG_FOOTER))
-		return 0;
-	return 1;
-}
-
-uint32_t set_default_BOARD_Config(void)
+uint32_t set_default_HYDRA_BOARD_Config(void)
 {
 uint32_t i;
 
-	BOARD_Config.gpio_tim_output = 0;	// all gpio
+	HYDRA_BOARD_Config.gpio_tim_output = 0;	// all gpio
 	for(i=0;i<HYDRA_TIM_NUM;i++)
 	{
 		switch(i)
 		{
 		case 0:
-			BOARD_Config.gpio_bit[i] = PIN_TIM1_CH1_Pin;
-			BOARD_Config.gpio_port[i] = PIN_TIM1_CH1_GPIO_Port;
+			HYDRA_BOARD_Config.gpio_bit[i] = PIN_TIM1_CH1_Pin;
+			HYDRA_BOARD_Config.gpio_port[i] = PIN_TIM1_CH1_GPIO_Port;
 			break;
 		case 1:
-			BOARD_Config.gpio_bit[i] = PIN_TIM1_CH2_Pin;
-			BOARD_Config.gpio_port[i] = PIN_TIM1_CH2_GPIO_Port;
+			HYDRA_BOARD_Config.gpio_bit[i] = PIN_TIM1_CH2_Pin;
+			HYDRA_BOARD_Config.gpio_port[i] = PIN_TIM1_CH2_GPIO_Port;
 			break;
 		case 2:
-			BOARD_Config.gpio_bit[i] = PIN_TIM1_CH3_Pin;
-			BOARD_Config.gpio_port[i] = PIN_TIM1_CH3_GPIO_Port;
+			HYDRA_BOARD_Config.gpio_bit[i] = PIN_TIM1_CH3_Pin;
+			HYDRA_BOARD_Config.gpio_port[i] = PIN_TIM1_CH3_GPIO_Port;
 			break;
 		case 3:
-			BOARD_Config.gpio_bit[i] = PIN_TIM1_CH4_Pin;
-			BOARD_Config.gpio_port[i] = PIN_TIM1_CH4_GPIO_Port;
+			HYDRA_BOARD_Config.gpio_bit[i] = PIN_TIM1_CH4_Pin;
+			HYDRA_BOARD_Config.gpio_port[i] = PIN_TIM1_CH4_GPIO_Port;
 			break;
 		case 4:
-			BOARD_Config.gpio_bit[i] = PIN_TIM3_CH1_Pin;
-			BOARD_Config.gpio_port[i] = PIN_TIM3_CH1_GPIO_Port;
+			HYDRA_BOARD_Config.gpio_bit[i] = PIN_TIM3_CH1_Pin;
+			HYDRA_BOARD_Config.gpio_port[i] = PIN_TIM3_CH1_GPIO_Port;
 			break;
 		case 5:
-			BOARD_Config.gpio_bit[i] = PIN_TIM3_CH2_Pin;
-			BOARD_Config.gpio_port[i] = PIN_TIM3_CH2_GPIO_Port;
+			HYDRA_BOARD_Config.gpio_bit[i] = PIN_TIM3_CH2_Pin;
+			HYDRA_BOARD_Config.gpio_port[i] = PIN_TIM3_CH2_GPIO_Port;
 			break;
 		case 6:
-			BOARD_Config.gpio_bit[i] = PIN_TIM3_CH3_Pin;
-			BOARD_Config.gpio_port[i] = PIN_TIM3_CH3_GPIO_Port;
+			HYDRA_BOARD_Config.gpio_bit[i] = PIN_TIM3_CH3_Pin;
+			HYDRA_BOARD_Config.gpio_port[i] = PIN_TIM3_CH3_GPIO_Port;
 			break;
 		case 7:
-			BOARD_Config.gpio_bit[i] = PIN_TIM3_CH4_Pin;
-			BOARD_Config.gpio_port[i] = PIN_TIM3_CH4_GPIO_Port;
+			HYDRA_BOARD_Config.gpio_bit[i] = PIN_TIM3_CH4_Pin;
+			HYDRA_BOARD_Config.gpio_port[i] = PIN_TIM3_CH4_GPIO_Port;
 			break;
 		case 8:
-			BOARD_Config.gpio_bit[i] = PIN_TIM4_CH1_Pin;
-			BOARD_Config.gpio_port[i] = PIN_TIM4_CH1_GPIO_Port;
+			HYDRA_BOARD_Config.gpio_bit[i] = PIN_TIM4_CH1_Pin;
+			HYDRA_BOARD_Config.gpio_port[i] = PIN_TIM4_CH1_GPIO_Port;
 			break;
 		case 9:
-			BOARD_Config.gpio_bit[i] = PIN_TIM4_CH2_Pin;
-			BOARD_Config.gpio_port[i] = PIN_TIM4_CH2_GPIO_Port;
+			HYDRA_BOARD_Config.gpio_bit[i] = PIN_TIM4_CH2_Pin;
+			HYDRA_BOARD_Config.gpio_port[i] = PIN_TIM4_CH2_GPIO_Port;
 			break;
 		case 10:
-			BOARD_Config.gpio_bit[i] = PIN_TIM4_CH3_Pin;
-			BOARD_Config.gpio_port[i] = PIN_TIM4_CH3_GPIO_Port;
+			HYDRA_BOARD_Config.gpio_bit[i] = PIN_TIM4_CH3_Pin;
+			HYDRA_BOARD_Config.gpio_port[i] = PIN_TIM4_CH3_GPIO_Port;
 			break;
 		case 11:
-			BOARD_Config.gpio_bit[i] = PIN_TIM4_CH4_Pin;
-			BOARD_Config.gpio_port[i] = PIN_TIM4_CH4_GPIO_Port;
+			HYDRA_BOARD_Config.gpio_bit[i] = PIN_TIM4_CH4_Pin;
+			HYDRA_BOARD_Config.gpio_port[i] = PIN_TIM4_CH4_GPIO_Port;
 			break;
 		case 12:
-			BOARD_Config.gpio_bit[i] = PIN_TIM5_CH1_Pin;
-			BOARD_Config.gpio_port[i] = PIN_TIM5_CH1_GPIO_Port;
+			HYDRA_BOARD_Config.gpio_bit[i] = PIN_TIM5_CH1_Pin;
+			HYDRA_BOARD_Config.gpio_port[i] = PIN_TIM5_CH1_GPIO_Port;
 			break;
 		case 13:
-			BOARD_Config.gpio_bit[i] = PIN_TIM5_CH2_Pin;
-			BOARD_Config.gpio_port[i] = PIN_TIM5_CH2_GPIO_Port;
+			HYDRA_BOARD_Config.gpio_bit[i] = PIN_TIM5_CH2_Pin;
+			HYDRA_BOARD_Config.gpio_port[i] = PIN_TIM5_CH2_GPIO_Port;
 			break;
 		case 14:
-			BOARD_Config.gpio_bit[i] = PIN_TIM5_CH3_Pin;
-			BOARD_Config.gpio_port[i] = PIN_TIM5_CH3_GPIO_Port;
+			HYDRA_BOARD_Config.gpio_bit[i] = PIN_TIM5_CH3_Pin;
+			HYDRA_BOARD_Config.gpio_port[i] = PIN_TIM5_CH3_GPIO_Port;
 			break;
 		case 15:
-			BOARD_Config.gpio_bit[i] = PIN_TIM5_CH4_Pin;
-			BOARD_Config.gpio_port[i] = PIN_TIM5_CH4_GPIO_Port;
+			HYDRA_BOARD_Config.gpio_bit[i] = PIN_TIM5_CH4_Pin;
+			HYDRA_BOARD_Config.gpio_port[i] = PIN_TIM5_CH4_GPIO_Port;
 			break;
 		case 16:
-			BOARD_Config.gpio_bit[i] = AUX3_TIM15_CH1_Pin;
-			BOARD_Config.gpio_port[i] = AUX3_TIM15_CH1_GPIO_Port;
+			HYDRA_BOARD_Config.gpio_bit[i] = AUX3_TIM15_CH1_Pin;
+			HYDRA_BOARD_Config.gpio_port[i] = AUX3_TIM15_CH1_GPIO_Port;
 			break;
 		case 17:
-			BOARD_Config.gpio_bit[i] = AUX4_TIM15_CH2_Pin;
-			BOARD_Config.gpio_port[i] = AUX4_TIM15_CH2_GPIO_Port;
+			HYDRA_BOARD_Config.gpio_bit[i] = AUX4_TIM15_CH2_Pin;
+			HYDRA_BOARD_Config.gpio_port[i] = AUX4_TIM15_CH2_GPIO_Port;
 			break;
 		}
-		HAL_GPIO_WritePin(BOARD_Config.gpio_port[i],BOARD_Config.gpio_bit[i],(BOARD_Config.gpio_bit_level_if_gpio & (1<<i)) ); // gpio defaults to 0 if used
-		set_gpio_mode(BOARD_Config.gpio_port[i],BOARD_Config.gpio_bit[i],MODE_OUTPUT);
+		HAL_GPIO_WritePin(HYDRA_BOARD_Config.gpio_port[i],HYDRA_BOARD_Config.gpio_bit[i],(HYDRA_BOARD_Config.gpio_bit_level_if_gpio & (1<<i)) ); // gpio defaults to 0 if used
+		set_gpio_mode(HYDRA_BOARD_Config.gpio_port[i],HYDRA_BOARD_Config.gpio_bit[i],MODE_OUTPUT);
 	}
 
 	return 0;
 }
 
-uint32_t config_pins_from_BOARD_Config(void)
+void tim_pin_on(uint16_t HYDRA_BOARD_Config_tim_number)
 {
-uint32_t i,k,pinmode;
-	for(i=0,k=0x01;i<HYDRA_TIM_NUM;i++,k<<=1)
-	{
-		if ( BOARD_Config.gpio_tim_output & k )
-			pinmode = MODE_AF;
-		else
-			pinmode = MODE_OUTPUT;
-		HAL_GPIO_WritePin(BOARD_Config.gpio_port[i],BOARD_Config.gpio_bit[i],(BOARD_Config.gpio_bit_level_if_gpio & k)>>i ); // gpio defaults to 0 if used
-		set_gpio_mode(BOARD_Config.gpio_port[i],BOARD_Config.gpio_bit[i],pinmode);
-	}
-	return 0;
+	if ( HYDRA_BOARD_Config_tim_number < HYDRA_TIM_NUM)
+		HAL_GPIO_WritePin(HYDRA_BOARD_Config.gpio_port[HYDRA_BOARD_Config_tim_number],HYDRA_BOARD_Config.gpio_bit[HYDRA_BOARD_Config_tim_number],GPIO_PIN_SET); // gpio defaults to 0 if used
 }
 
-void tim_pin_on(uint16_t BOARD_Config_tim_number)
+void tim_pin_off(uint16_t HYDRA_BOARD_Config_tim_number)
 {
-	if ( BOARD_Config_tim_number < HYDRA_TIM_NUM)
-		HAL_GPIO_WritePin(BOARD_Config.gpio_port[BOARD_Config_tim_number],BOARD_Config.gpio_bit[BOARD_Config_tim_number],GPIO_PIN_SET); // gpio defaults to 0 if used
-}
-
-void tim_pin_off(uint16_t BOARD_Config_tim_number)
-{
-	if ( BOARD_Config_tim_number < HYDRA_TIM_NUM)
-		HAL_GPIO_WritePin(BOARD_Config.gpio_port[BOARD_Config_tim_number],BOARD_Config.gpio_bit[BOARD_Config_tim_number],GPIO_PIN_RESET); // gpio defaults to 0 if used
+	if ( HYDRA_BOARD_Config_tim_number < HYDRA_TIM_NUM)
+		HAL_GPIO_WritePin(HYDRA_BOARD_Config.gpio_port[HYDRA_BOARD_Config_tim_number],HYDRA_BOARD_Config.gpio_bit[HYDRA_BOARD_Config_tim_number],GPIO_PIN_RESET); // gpio defaults to 0 if used
 }
 
 uint32_t test_blink_ports(uint8_t index , uint8_t level)
@@ -317,8 +293,8 @@ uint32_t test_blink_ports(uint8_t index , uint8_t level)
 GPIO_TypeDef		*gpio_port;
 uint16_t			gpio_bit;
 
-	gpio_port = BOARD_Config.gpio_port[index];
-	gpio_bit  = BOARD_Config.gpio_bit[index];
+	gpio_port = HYDRA_BOARD_Config.gpio_port[index];
+	gpio_bit  = HYDRA_BOARD_Config.gpio_bit[index];
 	HAL_GPIO_WritePin(gpio_port,gpio_bit,level);
 	return 0;
 }

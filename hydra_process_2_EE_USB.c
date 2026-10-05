@@ -14,9 +14,9 @@
  * Project : A_os
 */
 /*
- * hydra_process_3_EE.c
+ * hydra_process_2_EE_USB.c
  *
- *  Created on: Sep 28, 2026
+ *  Created on: Oct 5, 2026
  *      Author: fil
  */
 
@@ -38,10 +38,28 @@ char					BoardNameVersion[EE_BOARD_NAMEVERSION_SIZE+EE_COUNTERS_SIZE];
 
 Presso_ee_TypeDef		Presso_on_sd;
 Presso_sdcard_TypeDef	Presso_sdcard[EE_PRESSO_NUM_PROGRAM];
+HYDRA_USB_TypeDef		HYDRA_USB;
 
 __attribute__ ((aligned (256)))	Presso_ee_TypeDef		Presso_programs[EE_PRESSO_NUM_PROGRAM];
 
+
 uint8_t					read_done=0;
+
+#define	XMODEM_AREA_LEN		32768
+uint8_t	xmodem_area[XMODEM_AREA_LEN];
+
+uint8_t	usb_rx_buffer[XMODEM_LINE_LEN];
+uint8_t	usb_tx_buffer[XMODEM_LINE_LEN];
+
+USB_DriverStruct_t	USB_Drv =
+{
+		.data = usb_rx_buffer,
+		.data_index = 0,
+		.requested_len = XMODEM_LINE_LEN,
+		.usb_interface_class = USB_CDC_CLASS,
+		.timeout = 50,
+		.wakeup_id = WAKEUP_FROM_USB_DEVICE_IRQ,
+};
 
 void ee_callback(uint32_t parameter)
 {
@@ -80,6 +98,10 @@ char		filesinfo[128];
 //extern		Presso_sdcard_TypeDef	Presso_sdcard[EE_PRESSO_NUM_PROGRAM];
 uint32_t	file_number=0;
 // Helper function to check if a string ends with a specific extension (case-insensitive)
+
+uint8_t		xmodem_rx_usb_enable;
+uint8_t		xmodem_rx_usb_enable_poll;
+uint8_t		tim_downscale=0;
 
 int has_extension(const char *filename, const char *ext)
 {
@@ -289,17 +311,72 @@ uint32_t 	char_processed = 0;
 	return nfiles;
 }
 
-void hydra_process_3_EE_init(uint32_t process_id)
-{
-}
-
+uint8_t		boardname_restored = 0,boardname_checked = 0;
 uint32_t	eeret_val;
 
+void read_version(uint8_t ee_event)
+{
+	if ( ee_event == 1)
+	{
+		if ( boardname_restored == 0)
+		{
+			boardname_restored = 1;
+			boardname_checked = 0;
+			eeret_val = i2c_24xx_read(&i2c_24xx_Drv,EE_BOARD_NAMEVERSION_ADDRESS,(uint8_t *)BoardNameVersion,EE_BOARD_NAMEVERSION_SIZE+EE_COUNTERS_SIZE);
+		}
+	}
+	if ( ee_event == 5)
+	{
+		if (( boardname_restored == 1) && ( boardname_checked == 0))
+		{
+			if ( strcmp(BoardNameVersion,BOARD_NAMEVERSION))
+			{
+				bzero(BoardNameVersion,EE_BOARD_NAMEVERSION_SIZE+EE_COUNTERS_SIZE);
+				sprintf((char *)BoardNameVersion,BOARD_NAMEVERSION);
+				eeret_val = i2c_24xx_write(&i2c_24xx_Drv,EE_BOARD_NAMEVERSION_ADDRESS,(uint8_t *)BoardNameVersion, EE_BOARD_NAMEVERSION_SIZE+EE_COUNTERS_SIZE);
+			}
+			boardname_checked = 1;
+			memcpy((uint8_t *)&Hydra_Counters,&BoardNameVersion[EE_BOARD_NAMEVERSION_SIZE],sizeof(Hydra_Counters_TypeDef));
+		}
+	}
+}
+
+void check_usd(void)
+{
+	if ( HAL_GPIO_ReadPin(SDMMC1_CD_GPIO_Port, SDMMC1_CD_Pin) == 0)
+	{
+		if ( (HYDRA_Struct.ee_sd_flags & HYDRA_SD_PRESENT) == 0 )
+		{
+			HYDRA_Struct.ee_sd_flags |= HYDRA_SD_PRESENT;
+			if ( (HYDRA_Struct.ee_sd_flags & HYDRA_SD_LOADED) == 0 )
+			{
+				sdload();
+				HYDRA_Struct.ee_sd_flags |= HYDRA_SD_LOADED;
+				if ( (HYDRA_Struct.ee_sd_flags & (HYDRA_I2CMEM_READ_IN_PROGRESS | HYDRA_I2CMEM_LOADED) ) == 0 )
+				{
+					HYDRA_Struct.ee_sd_flags |= HYDRA_I2CMEM_READ_IN_PROGRESS;
+					i2c_24xx_read(&i2c_24xx_Drv,EE_PRESSO_PROGSTART,(uint8_t *)&Presso_programs,EE_PRESSO_PROGRAM_SIZE*(EE_PRESSO_NUM_PROGRAM));
+				}
+			}
+		}
+	}
+	else
+	{
+		HYDRA_Struct.ee_sd_flags &= ~HYDRA_SD_PRESENT;
+		HYDRA_Struct.ee_sd_flags &= ~HYDRA_SD_LOADED;
+	}
+}
+
+void hydra_process_2_EE_USB_init(uint32_t process_id)
+{
+	usb_device_driver_register(&USB_Drv);
+}
+
 uint32_t	size_struct;
-void hydra_process_3_EE(uint32_t process_id)
+void hydra_process_2_EE_USB(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-uint8_t		cntr = 0,boardname_restored = 0,boardname_checked = 0;
+uint8_t		cntr = 0;
 
 	sdcard_register(&HydraSDCARD);
 	if ( i2c_24xx_register(&i2c_24xx_Drv) == 0 )
@@ -311,58 +388,27 @@ uint8_t		cntr = 0,boardname_restored = 0,boardname_checked = 0;
 
 	while(1)
 	{
-		wait_event(EVENT_TIMER | EVENT_I2C1_IRQ);
+		wait_event(EVENT_TIMER | EVENT_I2C1_IRQ | EVENT_USB_DEVICE_IRQ);
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
 			cntr++;
-			if ( cntr == 1)
+			read_version(cntr);
+			if ( cntr == 20)
 			{
-				if ( boardname_restored == 0)
-				{
-					boardname_restored = 1;
-					boardname_checked = 0;
-					eeret_val = i2c_24xx_read(&i2c_24xx_Drv,EE_BOARD_NAMEVERSION_ADDRESS,(uint8_t *)BoardNameVersion,EE_BOARD_NAMEVERSION_SIZE+EE_COUNTERS_SIZE);
-				}
+				cntr = 10;
+				check_usd();
 			}
-			if ( cntr == 5)
+			if ( xmodem_rx_usb_enable == 1 )
 			{
-				if (( boardname_restored == 1) && ( boardname_checked == 0))
+				if ( xmodem_rx_usb_enable_poll	 == 1 )
 				{
-					if ( strcmp(BoardNameVersion,BOARD_NAMEVERSION))
+					tim_downscale ++;
+					if ( tim_downscale > 10 )
 					{
-						bzero(BoardNameVersion,EE_BOARD_NAMEVERSION_SIZE+EE_COUNTERS_SIZE);
-						sprintf((char *)BoardNameVersion,BOARD_NAMEVERSION);
-						eeret_val = i2c_24xx_write(&i2c_24xx_Drv,EE_BOARD_NAMEVERSION_ADDRESS,(uint8_t *)BoardNameVersion, EE_BOARD_NAMEVERSION_SIZE+EE_COUNTERS_SIZE);
+						xmodem_data_process((uint32_t *)&USB_Drv,xmodem_rx_usb_enable_poll,XMODEM_IF_USB,usb_rx_buffer);
+						tim_downscale = 0;
 					}
-					boardname_checked = 1;
-					memcpy((uint8_t *)&Hydra_Counters,&BoardNameVersion[EE_BOARD_NAMEVERSION_SIZE],sizeof(Hydra_Counters_TypeDef));
-				}
-			}
-			if ( cntr == 10)
-			{
-				cntr = 0;
-				if ( HAL_GPIO_ReadPin(SDMMC1_CD_GPIO_Port, SDMMC1_CD_Pin) == 0)
-				{
-					if ( (HYDRA_Struct.ee_sd_flags & HYDRA_SD_PRESENT) == 0 )
-					{
-						HYDRA_Struct.ee_sd_flags |= HYDRA_SD_PRESENT;
-						if ( (HYDRA_Struct.ee_sd_flags & HYDRA_SD_LOADED) == 0 )
-						{
-							sdload();
-							HYDRA_Struct.ee_sd_flags |= HYDRA_SD_LOADED;
-							if ( (HYDRA_Struct.ee_sd_flags & (HYDRA_I2CMEM_READ_IN_PROGRESS | HYDRA_I2CMEM_LOADED) ) == 0 )
-							{
-								HYDRA_Struct.ee_sd_flags |= HYDRA_I2CMEM_READ_IN_PROGRESS;
-								i2c_24xx_read(&i2c_24xx_Drv,EE_PRESSO_PROGSTART,(uint8_t *)&Presso_programs,EE_PRESSO_PROGRAM_SIZE*(EE_PRESSO_NUM_PROGRAM));
-							}
-						}
-					}
-				}
-				else
-				{
-					HYDRA_Struct.ee_sd_flags &= ~HYDRA_SD_PRESENT;
-					HYDRA_Struct.ee_sd_flags &= ~HYDRA_SD_LOADED;
 				}
 			}
 		}
@@ -387,9 +433,29 @@ uint8_t		cntr = 0,boardname_restored = 0,boardname_checked = 0;
 				}
 			}
 		}
+		if (( wakeup & WAKEUP_FROM_USB_DEVICE_IRQ) == WAKEUP_FROM_USB_DEVICE_IRQ)
+		{
+			if (( usb_rx_buffer[0] == '<') && ( usb_rx_buffer[1] == 'h'))
+			{
+				xmodem_rx_usb_enable = 1;
+				xmodem_rx_usb_enable_poll = 1;
+			}
+			else
+			{
+				if (xmodem_data_process((uint32_t *)&USB_Drv,xmodem_rx_usb_enable_poll,XMODEM_IF_USB,usb_rx_buffer) == X_EOT)
+				{
+					xmodem_rx_usb_enable = 0;
+					xmodem_rx_usb_enable_poll = 0;
+				}
+				else
+				{
+					xmodem_rx_usb_enable = 1;
+					xmodem_rx_usb_enable_poll = 0;
+					parse_USB_packet(usb_rx_buffer,usb_get_rx_len(&USB_Drv));
+				}
+			}
+		}
 	}
 }
 #endif //#ifndef SAMPLE_PROCESSES_ENABLED
-
-
 
