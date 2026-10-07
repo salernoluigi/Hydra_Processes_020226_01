@@ -28,7 +28,7 @@
 
 extern	HYDRA_USB_TypeDef		HYDRA_USB;
 
-uint8_t pack_USB_packet(uint8_t *rx_buf,uint8_t len)
+static uint8_t pack_USB_packet(uint8_t *rx_buf,uint8_t len)
 {
 uint32_t	i;
 
@@ -61,7 +61,8 @@ uint32_t	i;
 	return 0;
 }
 
-uint8_t decode_USB_packet(void)
+
+static uint8_t decode_USB_packet(void)
 {
 uint16_t	pnum;
 char p0;
@@ -93,10 +94,15 @@ int	p1,p2,p3;
 	}
 	return pnum;
 }
-
-uint8_t parse_USB_packet(uint8_t* Buf,uint8_t len)
+/*
+ * return values:
+ * 0  : command accepted
+ * 1  : no valid command
+ * >1 : returns lenght of the xmodem set received
+ */
+uint32_t parse_USB_packet(uint8_t* Buf,uint8_t len)
 {
-uint8_t 	ret_val = 1;
+uint32_t 	ret_val = 1;
 
 	if ( pack_USB_packet(Buf,len) == 0 )
 		return 1;
@@ -130,6 +136,10 @@ uint8_t 	ret_val = 1;
 					   );
 				HYDRA_USB.usb_tx_buf_len = strlen((char *)HYDRA_USB.usb_tx_buf);
 				ret_val = 0;
+				break;
+	case HYDRA_GOXMODEM :
+		ret_val = HYDRA_USB.usb_xmodem_size = HYDRA_USB.parameter1_from_usb;
+		break;
 	}
 	if ( ret_val == 0 )
 	{

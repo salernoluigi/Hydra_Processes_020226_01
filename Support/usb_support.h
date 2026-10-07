@@ -23,7 +23,7 @@
 #ifndef SUPPORT_USB_SUPPORT_H_
 #define SUPPORT_USB_SUPPORT_H_
 
-extern	uint8_t parse_USB_packet(uint8_t* Buf,uint8_t len);
+extern	uint32_t parse_USB_packet(uint8_t* Buf,uint8_t len);
 
 
 #endif /* SUPPORT_USB_SUPPORT_H_ */

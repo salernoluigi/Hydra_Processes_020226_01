@@ -221,6 +221,7 @@ typedef struct
 	uint8_t			usb_tx_buf[XMODEM_LINE_LEN];
 	uint8_t			usb_tx_buf_len;
 	uint8_t 		usb_flags;
+	uint32_t		usb_xmodem_size;
 }HYDRA_USB_TypeDef;
 /* usb_status */
 #define	USB_XMO_PHASE			0x01
@@ -241,6 +242,7 @@ typedef struct
 #define		HYDRA_GETVERINFO	'V'
 #define		HYDRA_GETCOUNTERS	'C'
 #define		HYDRA_ACTIVE		'A'
+#define		HYDRA_GOXMODEM		'X'
 
 #define		COUNTERS_UNIT		60
 

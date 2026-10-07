@@ -42,6 +42,8 @@ HYDRA_USB_TypeDef		HYDRA_USB;
 
 __attribute__ ((aligned (256)))	Presso_ee_TypeDef		Presso_programs[EE_PRESSO_NUM_PROGRAM];
 
+#define	xmodem_rx_data_area		0x30000000
+#define	xmodem_rx_data_len		0x2ffff
 
 uint8_t					read_done=0;
 
@@ -372,18 +374,25 @@ void hydra_process_2_EE_USB_init(uint32_t process_id)
 }
 
 uint32_t	size_struct;
+#define	PRC2_TICK	100
+#define	XMO_TOUT	200
+
 void hydra_process_2_EE_USB(uint32_t process_id)
 {
 uint32_t	wakeup,flags;
-uint8_t		cntr = 0;
+uint8_t		cntr = 0,xmo_res,xmo_timeout;
 
 	sdcard_register(&HydraSDCARD);
 	if ( i2c_24xx_register(&i2c_24xx_Drv) == 0 )
 		HYDRA_Struct.ee_sd_flags |= HYDRA_I2CMEM_PRESENT;
-	create_timer(TIMER_ID_0,100,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
+	create_timer(TIMER_ID_0,PRC2_TICK,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	bzero((char *)&Presso_programs[0],sizeof(Presso_ee_TypeDef)*EE_PRESSO_NUM_PROGRAM);
 	bzero(BoardNameVersion,EE_BOARD_NAMEVERSION_SIZE+EE_COUNTERS_SIZE);
 	size_struct = sizeof(Presso_ee_TypeDef);
+
+	xmodem_rx_usb_enable = 0;
+	xmodem_rx_usb_enable_poll = 0;
+	xmodem_rx_init((uint8_t *)xmodem_rx_data_area,xmodem_rx_data_len);
 
 	while(1)
 	{
@@ -408,6 +417,12 @@ uint8_t		cntr = 0;
 						xmodem_data_process((uint32_t *)&USB_Drv,xmodem_rx_usb_enable_poll,XMODEM_IF_USB,usb_rx_buffer);
 						tim_downscale = 0;
 					}
+				}
+				xmo_timeout--;
+				if ( xmo_timeout == 0 )
+				{
+					xmodem_rx_usb_enable = 0;
+					xmodem_rx_usb_enable_poll = 0;
 				}
 			}
 		}
@@ -434,24 +449,26 @@ uint8_t		cntr = 0;
 		}
 		if (( wakeup & WAKEUP_FROM_USB_DEVICE_IRQ) == WAKEUP_FROM_USB_DEVICE_IRQ)
 		{
-			if (( usb_rx_buffer[0] == '<') && ( usb_rx_buffer[1] == 'h'))
+			if ( xmodem_rx_usb_enable == 0 )
 			{
-				xmodem_rx_usb_enable = 1;
-				xmodem_rx_usb_enable_poll = 1;
+				if ( parse_USB_packet(usb_rx_buffer,usb_get_rx_len(&USB_Drv)) > 1 )
+				{
+					xmodem_rx_usb_enable = 1;
+					xmodem_rx_usb_enable_poll = 1;
+					xmo_timeout = XMO_TOUT;
+				}
 			}
 			else
 			{
-				if (xmodem_data_process((uint32_t *)&USB_Drv,xmodem_rx_usb_enable_poll,XMODEM_IF_USB,usb_rx_buffer) == X_EOT)
+				xmo_res = xmodem_data_process((uint32_t *)&USB_Drv,xmodem_rx_usb_enable_poll,XMODEM_IF_USB,usb_rx_buffer);
+				if ( xmo_res == X_EOT)
 				{
 					xmodem_rx_usb_enable = 0;
-					xmodem_rx_usb_enable_poll = 0;
+					bzero(usb_rx_buffer,XMODEM_LINE_LEN);
 				}
 				else
-				{
-					xmodem_rx_usb_enable = 1;
 					xmodem_rx_usb_enable_poll = 0;
-					parse_USB_packet(usb_rx_buffer,usb_get_rx_len(&USB_Drv));
-				}
+				xmo_timeout = XMO_TOUT;
 			}
 		}
 	}
