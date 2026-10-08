@@ -117,7 +117,7 @@ typedef struct
 	uint8_t			program_number;
 }Presso_sdcard_TypeDef;
 
-
+extern	uint32_t presso_init(void);
 extern	uint32_t presso_start(uint32_t level);
 extern	void presso_sequencer_halt(void);
 extern	void presso_sequencer_sm(void);

@@ -26,7 +26,7 @@
 
 #include "hydra.h"
 
-#define DEBUG_FUNCTIONS 1
+//#define DEBUG_FUNCTIONS 1
 
 #ifdef DEBUG_FUNCTIONS
 enum StateMachine {

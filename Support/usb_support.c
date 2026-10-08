@@ -103,43 +103,74 @@ int	p1,p2,p3;
 uint32_t parse_USB_packet(uint8_t* Buf,uint8_t len)
 {
 uint32_t 	ret_val = 1;
+uint16_t	pnum;
 
 	if ( pack_USB_packet(Buf,len) == 0 )
 		return 1;
-	if ( decode_USB_packet() == 0 )
+	pnum = decode_USB_packet();
+	if ( pnum == 0)
 		return 1;
 	HYDRA_USB.usb_tx_buf_len = 0;
-	switch(HYDRA_USB.command_from_usb)
+	if (( HYDRA_USB.command_from_usb & 0x20) == 0)	// Monitor commands
 	{
-	case HYDRA_GETVERINFO:
-		sprintf((char *)HYDRA_USB.usb_tx_buf,"%s\n\r",BOARD_NAMEVERSION);
-		HYDRA_USB.usb_tx_buf_len = strlen((char *)HYDRA_USB.usb_tx_buf);
-		ret_val = 0;
-		break;
-	case HYDRA_GETCOUNTERS:
-		sprintf((char *)HYDRA_USB.usb_tx_buf,"%d %d %d %d %d %d %d %d\n\r",
-				(int )Hydra_Counters.op_time[GLOBAL_OP]/COUNTERS_UNIT,
-				(int )Hydra_Counters.op_time[AIRPEN_OP]/COUNTERS_UNIT,
-				(int )Hydra_Counters.op_time[HYDRAPEN_OP]/COUNTERS_UNIT,
-				(int )Hydra_Counters.op_time[JETPEEL_OP]/COUNTERS_UNIT,
-				(int )Hydra_Counters.op_time[LINFOCUP_OP]/COUNTERS_UNIT,
-				(int )Hydra_Counters.op_time[MOUSSE_OP]/COUNTERS_UNIT,
-				(int )Hydra_Counters.op_time[PRESSO_OP]/COUNTERS_UNIT,
-				(int )Hydra_Counters.op_time[VORTEX_OP]/COUNTERS_UNIT
-			   );
-		HYDRA_USB.usb_tx_buf_len = strlen((char *)HYDRA_USB.usb_tx_buf);
-		ret_val = 0;
-		break;
-	case HYDRA_ACTIVE:
-		sprintf((char *)HYDRA_USB.usb_tx_buf,"Active : %d\n\r",
-						(int )HYDRA_Struct.running_function
-					   );
+		switch(HYDRA_USB.command_from_usb)
+		{
+		case HYDRA_GETVERINFO:
+			sprintf((char *)HYDRA_USB.usb_tx_buf,"%s %s\n\r",BOARD_NAMEVERSION,A_OS_VERSION);
+			HYDRA_USB.usb_tx_buf_len = strlen((char *)HYDRA_USB.usb_tx_buf);
+			ret_val = 0;
+			break;
+		case HYDRA_GETCOUNTERS:
+			sprintf((char *)HYDRA_USB.usb_tx_buf,"%d %d %d %d %d %d %d %d\n\r",
+					(int )Hydra_Counters.op_time[GLOBAL_OP]/COUNTERS_UNIT,
+					(int )Hydra_Counters.op_time[AIRPEN_OP]/COUNTERS_UNIT,
+					(int )Hydra_Counters.op_time[HYDRAPEN_OP]/COUNTERS_UNIT,
+					(int )Hydra_Counters.op_time[JETPEEL_OP]/COUNTERS_UNIT,
+					(int )Hydra_Counters.op_time[LINFOCUP_OP]/COUNTERS_UNIT,
+					(int )Hydra_Counters.op_time[MOUSSE_OP]/COUNTERS_UNIT,
+					(int )Hydra_Counters.op_time[PRESSO_OP]/COUNTERS_UNIT,
+					(int )Hydra_Counters.op_time[VORTEX_OP]/COUNTERS_UNIT
+				   );
+			HYDRA_USB.usb_tx_buf_len = strlen((char *)HYDRA_USB.usb_tx_buf);
+			ret_val = 0;
+			break;
+		case HYDRA_ACTIVE:
+			sprintf((char *)HYDRA_USB.usb_tx_buf,"Active : %d\n\r",
+							(int )HYDRA_Struct.running_function
+						   );
+					HYDRA_USB.usb_tx_buf_len = strlen((char *)HYDRA_USB.usb_tx_buf);
+					ret_val = 0;
+					break;
+		case HYDRA_GOXMODEM :
+			ret_val = HYDRA_USB.usb_xmodem_size = HYDRA_USB.parameter1_from_usb;
+			break;
+		}
+	}
+	else	// op commands
+	{
+		switch(HYDRA_USB.command_from_usb)
+		{
+		case HYDRA_OP_PRESSO:
+			if ( pnum == 3)
+			{
+				HYDRA_Struct.presso_program = HYDRA_USB.parameter2_from_usb;
+				if ( HYDRA_USB.parameter1_from_usb )
+					sprintf((char *)HYDRA_USB.usb_tx_buf,"Presso program %d started\n\r",(int )HYDRA_Struct.presso_program);
+				else
+					sprintf((char *)HYDRA_USB.usb_tx_buf,"Presso program %d stopped\n\r",(int )HYDRA_Struct.presso_program);
+				HYDRA_USB.usb_tx_buf_len = strlen((char *)HYDRA_USB.usb_tx_buf);
+				presso_start( HYDRA_USB.parameter1_from_usb );
+				ret_val = 0;
+			}
+			else
+			{
+				sprintf((char *)HYDRA_USB.usb_tx_buf,"Presso program wrong parameter number %d : <p 0|1[stop/start] 1[program number]>\n\r",(int )pnum);
 				HYDRA_USB.usb_tx_buf_len = strlen((char *)HYDRA_USB.usb_tx_buf);
 				ret_val = 0;
-				break;
-	case HYDRA_GOXMODEM :
-		ret_val = HYDRA_USB.usb_xmodem_size = HYDRA_USB.parameter1_from_usb;
-		break;
+			}
+			break;
+		}
+
 	}
 	if ( ret_val == 0 )
 	{

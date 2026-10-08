@@ -107,6 +107,11 @@ Presso_HEAT_TypeDef Presso_HEAT[6] =
 		},
 };
 
+uint32_t presso_init(void)
+{
+	return 0;
+}
+
 void presso_sequencer_set_gpio(uint16_t outconfig)
 {
 uint8_t i;

@@ -27,6 +27,12 @@
 #include "vortex.h"
 #include "common.h"
 
+
+uint32_t vortex_init(void)
+{
+	return 0;
+}
+
 uint16_t	last_stepper_speed=0;
 uint16_t	last_motor_speed=0;
 uint16_t	vortex_status=0;
@@ -114,10 +120,6 @@ uint32_t	vortex_set_speed(uint16_t	data1_val)
 	return 0;
 }
 
-uint32_t vortex_init(void)
-{
-	return 0;
-}
 
 static uint32_t vortex_cleanup_function(uint32_t	val0,uint32_t	val1)
 {

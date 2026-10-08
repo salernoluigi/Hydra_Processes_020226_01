@@ -243,6 +243,16 @@ typedef struct
 #define		HYDRA_GETCOUNTERS	'C'
 #define		HYDRA_ACTIVE		'A'
 #define		HYDRA_GOXMODEM		'X'
+#define		HYDRA_OP_AIRPEN		'a'
+#define		HYDRA_OP_HYDRAPEN	'h'
+#define		HYDRA_OP_JETPEEL	'j'
+#define		HYDRA_OP_LINFOCUP	'l'
+#define		HYDRA_OP_MOUSSE		'm'
+#define		HYDRA_OP_PRESSO		'p'
+#define		HYDRA_OP_VORTEX		'v'
+#define		HYDRA_OP_PELTIER	'e'
+#define		HYDRA_OP_RESRF		'r'
+#define		HYDRA_OP_CAPRF		'c'
 
 #define		COUNTERS_UNIT		60
 
