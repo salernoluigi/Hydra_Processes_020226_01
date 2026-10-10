@@ -1,0 +1,6 @@
+1) aggiungere pausa tra settori 0 - 9
+2) aggiungere test ev
+3) mmhg max 50 -> 0.06 bar
+4) aggiungere in S la pressione da raggiungere nel programma min 30 max 120 mmhg
+
+

@@ -1,0 +1,21 @@
+Pressione -> mmgh
+Ciclo -> minuti
+Tempo -> secondi
+
+Detossinante -> detox		pressione 30 tempo 5 ciclo 32
+Micro Circolo -> microc
+Gambe Edematose -> gedema
+Coscie Edematose -> cedema
+Addome -> addome
+Gravidanza Pre Post ->grav	pressione 30-120 tempo 5 ciclo 32
+PostChirurgico -> postc
+Modellante -> mod
+Drenante -> dre
+
+
+1 pianta
+2 caviglia
+3-4 polpaccio
+5-6 coscia
+7-8 inguine
+9-10 braccia
