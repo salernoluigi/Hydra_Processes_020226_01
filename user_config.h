@@ -25,16 +25,16 @@
 
 #define		USER_PROCESSES	1
 
-#define 	USB_DEVICE_ENABLED		1
-#define		USB_CDC				1
+#define 	USB_DEVICE_ENABLED			1
+#define		USB_CDC						1
 #undef		USBD_MANUFACTURER_STRING
 #define		USBD_MANUFACTURER_STRING	"KS"
 #undef		USBD_PRODUCT_STRING_FS
 #define 	USBD_PRODUCT_STRING_FS		"Hydra Virtual ComPort"
-#define		XMODEM_ENABLE		1
+#define		XMODEM_ENABLE				1
+#define 	A_OS_WAV_PLAYER_ENABLED		1
 
-
-#define		BOARD_NAME					"020226-00"
+#define		BOARD_NAME					"020226-01"
 #define		MACHINE_NAME				"Hydra"
 #define		MACHINE_VERSION				"A"
 

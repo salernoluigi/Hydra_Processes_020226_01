@@ -26,6 +26,7 @@
 #define	BOARD_NAMEVERSION				"KS Hydra 1.0 FW : 1.0.1"
 
 extern	ADC_HandleTypeDef hadc1;
+extern	DAC_HandleTypeDef hdac1;
 
 extern	I2C_HandleTypeDef hi2c1;
 extern	I2C_HandleTypeDef hi2c2;
@@ -40,6 +41,7 @@ extern	TIM_HandleTypeDef htim3;
 extern	TIM_HandleTypeDef htim4;
 extern	TIM_HandleTypeDef htim5;
 extern	TIM_HandleTypeDef htim6;
+extern	TIM_HandleTypeDef htim7;
 extern	TIM_HandleTypeDef htim15;
 extern	TIM_HandleTypeDef htim16;
 extern	TIM_HandleTypeDef htim17;
@@ -314,6 +316,7 @@ extern	void stepper_callback(uint32_t value);
 #include "Support/weak_ks_functions.h"
 #include "Support/counters.h"
 #include "Support/usb_support.h"
+#include "Support/presso_support.h"
 
 #include "Lcd/lcd_parser.h"
 

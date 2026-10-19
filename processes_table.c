@@ -25,7 +25,7 @@ extern	void process1_empty_init(uint32_t process_id);
 extern	void process2_empty(uint32_t process_id);	//This is process2
 extern	void process2_empty_init(uint32_t process_id);
 
-extern	void process_3(uint32_t process_id);	//This is process3
+extern	void process_3_audio(uint32_t process_id);	//This is process3
 extern	void process_3_init(uint32_t process_id);
 
 
@@ -34,21 +34,21 @@ USRprcs_t	UserProcesses[USR_PROCESS_NUMBER] =
 		{
 				.user_init = hydra_process_1_main_init,
 				.user_process = hydra_process_1_main,
-				.stack_size = 4096,
+				.stack_size = 2048,
 		},
 		{
 				.user_init = hydra_process_2_EE_USB_init,
 				.user_process = hydra_process_2_EE_USB,
-				.stack_size = 4096,
+				.stack_size = 2048,
 		},
 		{
 				.user_init = process_3_init,
-				.user_process = process_3,
-				.stack_size = 4096,
+				.user_process = process_3_audio,
+				.stack_size = 256,
 		},
 		{
 				.user_process = process_4_debugger,
-				.stack_size = 4096,
+				.stack_size = 256,
 		}
 };
 #endif // #ifndef	SAMPLE_PROCESSES_ENABLED

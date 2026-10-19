@@ -75,16 +75,6 @@ void ac_cmd2_off(void)
 	HAL_GPIO_WritePin(AC_CMD2_GPIO_Port, AC_CMD2_Pin,GPIO_PIN_RESET);
 }
 
-void buzzer_on(void)
-{
-	HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin,GPIO_PIN_SET);
-}
-
-void buzzer_off(void)
-{
-	HAL_GPIO_WritePin(BUZZER_GPIO_Port, BUZZER_Pin,GPIO_PIN_RESET);
-}
-
 void hydrogen_on(void)
 {
 	HAL_GPIO_WritePin(HYDROGEN_9V_GPIO_Port, HYDROGEN_9V_Pin,GPIO_PIN_SET);
