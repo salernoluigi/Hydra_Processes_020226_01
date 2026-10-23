@@ -45,12 +45,12 @@ uint32_t	count=0;
 	create_timer(TIMER_ID_0,TIM_TICK,TIMERFLAGS_FOREVER | TIMERFLAGS_ENABLED);
 	adc_start(&ADC_Drv);
 	uart_start_receive(&Uart3_LCD_Drv);
-	uart_start_receive(&Uart7_Easy_Drv);
+	uart_start_receive(&Uart4_RS485_Drv);
 	global_timer_init();
 	HAL_GPIO_WritePin(SLEEP_3G_GPIO_Port, SLEEP_3G_Pin, GPIO_PIN_RESET);
 	while(1)
 	{
-		wait_event(EVENT_TIMER | EVENT_ADC1_IRQ | EVENT_UART3_IRQ | EVENT_I2C1_IRQ | EVENT_SW_MODULES);
+		wait_event(EVENT_TIMER | EVENT_ADC1_IRQ | EVENT_UART3_IRQ| EVENT_UART4_IRQ | EVENT_I2C1_IRQ | EVENT_SW_MODULES);
 		get_wakeup_flags(&wakeup,&flags);
 		if (( wakeup & WAKEUP_FROM_TIMER) == WAKEUP_FROM_TIMER)
 		{
@@ -122,10 +122,9 @@ uint32_t	count=0;
 			if ( uart_get_rxlen(&Uart3_LCD_Drv) > 2)
 				lcd_parser(&Uart3_LCD_Drv);
 		}
-		if (( wakeup & WAKEUP_FROM_EASY_UART_IRQ) == WAKEUP_FROM_EASY_UART_IRQ)
+		if (( wakeup & WAKEUP_FROM_RS485_UART_IRQ) == WAKEUP_FROM_RS485_UART_IRQ)
 		{
-			if (( flags & WAKEUP_FLAGS_UART_RX) == WAKEUP_FLAGS_UART_RX )
-				easy_uart++;
+			uart_send(&Uart4_RS485_Drv,uart4_RS485_rx_buffer,uart_get_rxlen(&Uart4_RS485_Drv));
 		}
 
 		if (( wakeup & WAKEUP_FROM_SW_MODULES_IRQ) == WAKEUP_FROM_SW_MODULES_IRQ)

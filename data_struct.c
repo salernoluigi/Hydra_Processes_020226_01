@@ -88,6 +88,7 @@ __STDRAM_DATA_AREA	UART_DriverStruct_t Uart4_RS485_Drv =
 	.uart = &huart4,
 	.wakeup_id = WAKEUP_FROM_UART4_IRQ,
 	.timeout = 100,
+	.quirk_hd_uart = 1,
 	.flags = UART_USES_DMA_TX | UART_USES_DMA_RX | UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
 	//.flags = UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
 };
@@ -104,22 +105,6 @@ __STDRAM_DATA_AREA	UART_DriverStruct_t Uart5_3G_Drv =
 	.timeout = 100,
 	.flags = UART_USES_DMA_TX | UART_USES_DMA_RX | UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
 	//.flags = UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
-};
-
-uint8_t	uart7_Easy_rx_buffer[UART7_RX_BUF_SIZE];
-uint8_t	uart7_Easy_tx_buffer[UART7_TX_BUF_SIZE];
-
-__STDRAM_DATA_AREA	UART_DriverStruct_t Uart7_Easy_Drv =
-{
-	.data = uart7_Easy_rx_buffer,
-	.rx_max_len = UART7_RX_BUF_SIZE,
-	.uart = &huart7,
-	.wakeup_id = WAKEUP_FROM_UART7_IRQ,
-	.timeout = 10,
-	.flags = UART_USES_DMA_TX | UART_USES_DMA_RX | UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
-	//.flags = UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
-	//.flags = UART_USES_DMA_TX | UART_WAKEUP_ON_RXFULL | UART_WAKEUP_ON_TIMEOUT,
-
 };
 
 __STDRAM_DATA_AREA	uint8_t	uart8_BT_rx_buffer[UART8_RX_BUF_SIZE];
@@ -202,7 +187,6 @@ void hydra_register_devices(void)
 	uart_register(&Uart3_LCD_Drv);
 	uart_register(&Uart4_RS485_Drv);
 	uart_register(&Uart5_3G_Drv);
-	uart_register(&Uart7_Easy_Drv);
 	uart_register(&Uart8_BT_Drv);
 	stepper_register(&Stepper_Control);
 	pwm_register(&Pwm_TIM1_Control);

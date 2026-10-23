@@ -96,12 +96,6 @@ extern	uint8_t	uart4_RS485_tx_buffer[UART4_TX_BUF_SIZE];
 extern	uint8_t	uart5_3G_rx_buffer[UART5_RX_BUF_SIZE];
 extern	uint8_t	uart5_3G_tx_buffer[UART5_TX_BUF_SIZE];
 
-#define	UART7_RX_BUF_SIZE	40
-#define	UART7_TX_BUF_SIZE	40
-#define	WAKEUP_FROM_EASY_UART_IRQ	WAKEUP_FROM_UART7_IRQ
-extern	uint8_t	uart7_Easy_rx_buffer[UART7_RX_BUF_SIZE];
-extern	uint8_t	uart7_Easy_tx_buffer[UART7_TX_BUF_SIZE];
-
 #define	UART8_RX_BUF_SIZE	512
 #define	UART8_TX_BUF_SIZE	512
 #define	WAKEUP_FROM_BT_UART_IRQ	WAKEUP_FROM_UART8_IRQ
@@ -328,8 +322,5 @@ extern	void stepper_callback(uint32_t value);
 #include "Functions/linfocup.h"
 #include "Functions/hydrapen.h"
 #include "Functions/presso.h"
-
-#include "Easy_functions/easy_functions.h"
-
 
 #endif /* HYDRA_020226_01_H_ */
